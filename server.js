@@ -1,5 +1,5 @@
 const express = require("express");
-
+const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 const routes = require("./routes");
 const app = express();
@@ -11,6 +11,8 @@ app.use(cors())
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.urlencoded({extended: true}));
+app.use(bodyParser.json());
 
 // Add routes, both API and view
 app.use(routes);
