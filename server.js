@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
-// Add routes, both API and view
+// Add routes API
 app.use(routes);
 
 // Connect to the Mongo DB
