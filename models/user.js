@@ -5,20 +5,23 @@ const usersSchema = new Schema({
   // title: { type: String, required: true },
   // author: { type: String, required: true },
   // body: String,
-  date: { type: Date, default: Date.now },
-  userName:  String,
   password:  String,
   salt: String,
-  sessionToken: String,
-  petName:  String,
-  breed: String,
-  age: Number,
-  park: String,
-  ball: String,
-  frisbee: String,
-  email: String,
-  photoUrl: String,
-  info: String
+  userData: {
+    sessionToken: String,
+    userName:  String,
+    petName:  String,
+    breed: String,
+    age: Number,
+    park: String,
+    ball: String,
+    frisbee: String,
+    email: String,
+    photoUrl: String,
+    info: String,
+    date: { type: Date, default: Date.now },
+  }
+
 });
 
 const User = mongoose.model("Users", usersSchema);
