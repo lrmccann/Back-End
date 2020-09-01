@@ -8,6 +8,8 @@ const usersSchema = new Schema({
   date: { type: Date, default: Date.now },
   userName:  String,
   password:  String,
+  salt: String,
+  sessionToken: String,
   petName:  String,
   breed: String,
   age: Number,

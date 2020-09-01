@@ -7,8 +7,8 @@ router
   .post(usersController.create);
   
 router
-  .route("/users/:id")
-  .get(usersController.findByUserName);
+  .route("/users/:id1/:id2")
+  .get(usersController.authenticate);
 
 
 
