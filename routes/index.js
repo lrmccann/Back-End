@@ -4,10 +4,7 @@ const usersController = require("../controllers/usersController");
 router
   .route("/users")
   // .get(usersController.findAll)
-  .post(function(req, res, next) {
-    // Handle the get for this route
-    usersController.create
-  });
+  .post(usersController.create);
   
 router
   .route("/users/:id1/:id2")
