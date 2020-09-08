@@ -9,6 +9,7 @@ const cors = require('cors');
 
 app.use(cors())
 
+// solution for CORS policy issues
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin",  "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
