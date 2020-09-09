@@ -16,7 +16,7 @@ const saltHash = (pass) => {
 module.exports = {
   
   create: async function(req, res) {
-    console.log("cretate-func", req.body)
+    console.log("create-func", req.body)
     console.log("userObj", req.body.userData.userName)
     let account = await db.User.findOne({ 'userData.userName': req.body.userData.userName});
     console.log("account",account)
@@ -35,7 +35,7 @@ module.exports = {
   },
   
   authenticate: async function(req, res) {
-    console.log('reqest', req.params.id1)
+    console.log('request', req.params.id1)
     const password = req.params.id2;
     let account = await db.User
       .findOne({ 'userData.userName': req.params.id1});
@@ -51,7 +51,7 @@ module.exports = {
         await db.User.findOneAndUpdate(
           {'userData.userName': req.params.id1},
           {'userData.sessionToken': token},
-          {new: true}
+          {new: true}    //You should set the new option to true to return the document after update was applied.
         )
         .then(result => res.json(result.userData))
       } else {
@@ -62,26 +62,76 @@ module.exports = {
     }
   },
 
-  findAll: async function(req, res) {
-    console.log('findall');
+  findAll: async function(req, res) {    
     await db.User
       .find({})
       .then(result => {
-        let array2 = result.map(function (user) {
-          return user._id
-        })
-        console.log("array2",array2);
-        res.json(array2);
+          let array2 = result.map(function (user) {
+            return user._id
+          })
+          console.log("array2",array2);
+          res.json(array2);
       })
       .catch(err => res.status(422).json(err))
-  }
+  },
 
+  findById: async function(req, res) {
+    console.log("_id", req.params.id1);
+    await db.User    
+      .findOne({ '_id': req.params.id1})
+      //Sending only userData back
+      // .then(result =>res.json(result.userData)) 
+      .then(result => {
+          // https://medium.com/@captaindaylight/get-a-subset-of-an-object-9896148b9c72
+          // Sending _id and userData back ie. everything except password and salt
+          const subsetOfUser = (({ _id, userData }) => ({ _id, userData}))(result);
+          console.log("subset",subsetOfUser); 
+          res.json(subsetOfUser);
+      })
+      .catch(err => res.status(422).json(err))
+  },
+
+  updateById: async function(req, res) {
+    console.log("_id", req.params.id1); 
+    // const filter = { '_id': req.params.id1 };    // updating by user id
+    const filter = { 'userData.userName': req.params.id1 };  //updating by user name
+    const updatedUser = {
+      'password'          : req.body.password,
+      'userData.petName'  : req.body.userData.petName,
+      'userData.breed'    : req.body.userData.breed, 
+      'userData.age'      : req.body.userData.age,
+      'userData.park'     : req.body.userData.park,
+      'userData.ball'     : req.body.userData.ball,
+      'userData.frisbee'  : req.body.userData.frisbee,
+      'userData.email'    : req.body.userData.email,
+      'userData.photoUrl' : req.body.userData.photoUrl,
+      'userData.info'     : req.body.userData.info,
+      'userData.zipCode'  : req.body.userData.zipCode,
+      'userData.city'     : req.body.userData.city
+      };
+    await db.User.findOneAndUpdate(
+        filter, updatedUser,
+        {new: true}    //You should set the new option to true to return the document after update was applied.    
+      )
+      .then(result => res.json(result.userData))
+      .catch(err => res.status(422).json(err));
+  },
+
+
+  // update: function(req, res) {
+  //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
+  //     .then(dbModel => res.json(dbModel))
+  //     .catch(err => res.status(422).json(err));
+  // },
+
+    
 
         // db.Post.find(req.query)
         //   .sort({ date: -1 })
         //   .then(dbModel => res.json(dbModel))
         //   .catch(err => res.status(422).json(err));
       // }
+
   // update: function(req, res) {
     //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
   //     .then(dbModel => res.json(dbModel))
