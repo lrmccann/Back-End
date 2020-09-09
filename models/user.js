@@ -22,7 +22,6 @@ const usersSchema = new Schema({
     zipCode: String,
     city: String,
     matchesYes: [],
-    matchesNo: [],
     date: { type: Date, default: Date.now }
   }
 
