@@ -3,9 +3,9 @@ const usersController = require("../controllers/usersController");
 
 router
   .route("/users")
-  // .get(usersController.findAll)
-  .post(usersController.create);
-  
+  .post(usersController.create)
+  .get(usersController.findAll) 
+
 router
   .route("/users/:id1/:id2")
   .get(usersController.authenticate);
