@@ -3,13 +3,17 @@ const usersController = require("../controllers/usersController");
 
 router
   .route("/users")
-  .post(usersController.create)
-  .get(usersController.findAll) 
-
+  .post(usersController.create)   // create a user
+  .get(usersController.findAll)   // get all users
+  
 router
-  .route("/users/:id1/:id2")
+  .route("/users/:id1/:id2")    //id1 is username, id2 is password
   .get(usersController.authenticate);
 
+  router
+  .route("/users/:id1")            //id1 is user _id
+  .get(usersController.findById)   // get 1 user by id   
+  .put(usersController.updateById)     // update 1 user by id
 
 
 // Matches with "/api/posts/:id"
