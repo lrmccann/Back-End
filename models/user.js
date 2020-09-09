@@ -19,7 +19,10 @@ const usersSchema = new Schema({
     email: String,
     photoUrl: String,
     info: String,
-    date: { type: Date, default: Date.now },
+    zipCode: String,
+    city: String,
+    matchesYes: [],
+    date: { type: Date, default: Date.now }
   }
 
 });
