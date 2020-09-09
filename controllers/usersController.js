@@ -60,14 +60,28 @@ module.exports = {
     } else {
       res.json("User not found.")
     }
-  } 
+  },
 
-  // findAll: function(req, res) {
-      //   db.Post.find(req.query)
-      //     .sort({ date: -1 })
-      //     .then(dbModel => res.json(dbModel))
-      //     .catch(err => res.status(422).json(err));
-      // },
+  findAll: async function(req, res) {
+    console.log('findall');
+    await db.User
+      .find({})
+      .then(result => {
+        let array2 = result.map(function (user) {
+          return user._id
+        })
+        console.log("array2",array2);
+        res.json(array2);
+      })
+      .catch(err => res.status(422).json(err))
+  }
+
+
+        // db.Post.find(req.query)
+        //   .sort({ date: -1 })
+        //   .then(dbModel => res.json(dbModel))
+        //   .catch(err => res.status(422).json(err));
+      // }
   // update: function(req, res) {
     //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
   //     .then(dbModel => res.json(dbModel))
@@ -79,4 +93,5 @@ module.exports = {
   //     .then(dbModel => res.json(dbModel))
   //     .catch(err => res.status(422).json(err));
   // }
+
 };
