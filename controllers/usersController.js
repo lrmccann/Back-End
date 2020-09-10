@@ -15,6 +15,7 @@ const saltHash = (pass) => {
 // Defining methods for the postsController
 module.exports = {
   
+  //////////////////////////////////////////////////////////////////
   create: async function(req, res) {
     console.log("create-func", req.body)
     console.log("userObj", req.body.userData.userName)
@@ -34,6 +35,7 @@ module.exports = {
     }
   },
   
+  ////////////////////////////////////////////////////////////////////
   authenticate: async function(req, res) {
     console.log('request', req.params.id1)
     const password = req.params.id2;
@@ -62,6 +64,7 @@ module.exports = {
     }
   },
 
+  //////////////////////////////////////////////////////////////////
   findAll: async function(req, res) {    
     await db.User
       .find({})
@@ -75,8 +78,11 @@ module.exports = {
       .catch(err => res.status(422).json(err))
   },
 
+  /////////////////////////////////////////////////////////////////////
   findById: async function(req, res) {
     console.log("_id", req.params.id1);
+    // await db.User    
+    // .findOne({ 'userName': req.params.id1})
     await db.User    
       .findOne({ '_id': req.params.id1})
       //Sending only userData back
@@ -91,10 +97,16 @@ module.exports = {
       .catch(err => res.status(422).json(err))
   },
 
+  /////////////////////////////////////////////////////////////////////
+  // Send the value for each field of updated User from frontend to
+  // updatedUser below from frontend - atleast 0 or "", else field 
+  // not specified wiil be set as null
+  
   updateById: async function(req, res) {
+    console.log("req",req.body);
     console.log("_id", req.params.id1); 
-    // const filter = { '_id': req.params.id1 };    // updating by user id
-    const filter = { 'userData.userName': req.params.id1 };  //updating by user name
+    const filter = { '_id': req.params.id1 };    // updating by user id
+    // const filter = { 'userData.userName': req.params.id1 };  //updating by user name
     const updatedUser = {
       'password'          : req.body.password,
       'userData.petName'  : req.body.userData.petName,
@@ -117,6 +129,38 @@ module.exports = {
       .catch(err => res.status(422).json(err));
   },
 
+//await db.User.updateOne(filter,{ $set: updatedUser }) 
+///////////////////////////////////////////////////////////////////
+  updateMatchesYesById: async function(req, res) {
+    console.log("_id", req.params.id1); 
+    console.log("req",req.body);
+    // let account = await db.User
+    //               .findOne({ 'userData.userName': req.params.id1});   // To update by user name
+    let account = await db.User
+                  .findOne({ '_id': req.params.id1});    // To update by user id
+    console.log("account", account);
+    let oldMatchesYes = account.userData.matchesYes;
+    console.log("old",oldMatchesYes);
+    var newMatchesYes = oldMatchesYes.concat(req.params.id2);
+    console.log("updated",newMatchesYes);
+     const filter = { '_id': req.params.id1 };    // updating by user id
+    //  const filter = { 'userData.userName': req.params.id1 };  //updating by user name    
+     await db.User.updateOne(filter,
+            { $set: { 'userData.matchesYes': newMatchesYes} }
+            )  
+      .then(result => res.json("Your Match Choice has been saved"))
+      .catch(err => res.status(422).json(err));
+  }
+  
+//////////////////////////////////////////////////////////////////////
+ 
+// await db.User.findOneAndUpdate(
+//     filter, updatedUser,
+//     {new: true}    //You should set the new option to true to return the document after update was applied.    
+//   )
+// .then(result => res.json(result.userData))
+// .catch(err => res.status(422).json(err));
+// }
 
   // update: function(req, res) {
   //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
@@ -124,13 +168,11 @@ module.exports = {
   //     .catch(err => res.status(422).json(err));
   // },
 
-    
-
-        // db.Post.find(req.query)
-        //   .sort({ date: -1 })
-        //   .then(dbModel => res.json(dbModel))
-        //   .catch(err => res.status(422).json(err));
-      // }
+  // db.Post.find(req.query)
+  //   .sort({ date: -1 })
+  //   .then(dbModel => res.json(dbModel))
+  //   .catch(err => res.status(422).json(err));
+// }
 
   // update: function(req, res) {
     //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
