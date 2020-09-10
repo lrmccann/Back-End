@@ -80,6 +80,7 @@ module.exports = {
 
   /////////////////////////////////////////////////////////////////////
   findById: async function(req, res) {
+    console.log("findById");
     console.log("_id", req.params.id1);
     // await db.User    
     // .findOne({ 'userName': req.params.id1})
@@ -150,7 +151,53 @@ module.exports = {
             )  
       .then(result => res.json("Your Match Choice has been saved"))
       .catch(err => res.status(422).json(err));
+  },
+  ///////////////////////////////////////////////////////////////
+
+  getMatchesById: async function(req, res) {
+    console.log("getMatchesById");
+    console.log("_id", req.params.id1);
+    //To Find by userName
+    // let account = await db.User 
+    //  .findOne({ 'userName': req.params.id1})
+    let account = await db.User    
+      .findOne({ '_id': req.params.id1}) 
+      console.log("account",account)  
+    let matchedUsers = account.userData.matchesYes;   
+    console.log(matchedUsers);     
+    await db.User.find({
+      _id: {
+          $in: matchedUsers
+      }
+    })  
+  // .then((result) => res.json(result))
+  .then(result => {
+    let keys_to_keep = ['_id', 'userData']
+     const result2 = result.map(e => {
+      const obj = {};
+      keys_to_keep.forEach(k => obj[k] = e[k])
+      return obj;
+    });
+    console.log("result2",result2);
+    res.json(result2);
+})
+  .catch(err => res.status(422).json(err));
+     
+    // for (i = 0; i < matchedUsers.length; i++) {
+    //     console.log(matchedUsers[i]);
+    //     let matchAccount = await db.User    
+    //       .findOne({ '_id': matchedUsers[i]}) 
+    //       .then(result => res.json(result))
+    //       .catch(err => res.status(422).json(err));
+    //     // matchedUsersData = matchedUsersData.concat(matchAccount);
+    // }
+    // // console.log(matchedUsersData); 
+ 
   }
+
+  ///////////////////////////////////////////////////////////////
+
+};
   
 //////////////////////////////////////////////////////////////////////
  
@@ -186,4 +233,4 @@ module.exports = {
   //     .catch(err => res.status(422).json(err));
   // }
 
-};
+
