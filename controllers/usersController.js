@@ -106,10 +106,10 @@ module.exports = {
   updateById: async function (req, res) {
     console.log("req", req.body);
     console.log("_id", req.params.id1);
-    const filter = { '_id': req.params.id1 };    // updating by user id
-    // const filter = { 'userData.userName': req.params.id1 };  //updating by user name
+    // const filter = { '_id': req.params.id1 };    // updating by user id
+    const filter = { 'userData.userName': req.params.id1 };  //updating by user name
     const updatedUser = {
-      'password': req.body.password,
+      // 'password': req.body.password,
       'userData.petName': req.body.userData.petName,
       'userData.breed': req.body.userData.breed,
       'userData.age': req.body.userData.age,
