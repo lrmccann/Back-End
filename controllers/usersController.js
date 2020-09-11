@@ -2,26 +2,26 @@ const db = require("../models");
 const bcrypt = require('bcrypt');
 
 const createSessiontoken = () => {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 }
 
 const saltHash = (pass) => {
-    const salt = bcrypt.genSaltSync(10);
-    const password = bcrypt.hashSync(pass, salt);
-    console.log("saltHash", salt, password)
-    return {password, salt};
+  const salt = bcrypt.genSaltSync(10);
+  const password = bcrypt.hashSync(pass, salt);
+  console.log("saltHash", salt, password)
+  return { password, salt };
 }
 
 // Defining methods for the postsController
 module.exports = {
-  
+
   //////////////////////////////////////////////////////////////////
-  create: async function(req, res) {
+  create: async function (req, res) {
     console.log("create-func", req.body)
     console.log("userObj", req.body.userData.userName)
-    let account = await db.User.findOne({ 'userData.userName': req.body.userData.userName});
-    console.log("account",account)
-    if (!account) { 
+    let account = await db.User.findOne({ 'userData.userName': req.body.userData.userName });
+    console.log("account", account)
+    if (!account) {
       const creds = saltHash(req.body.password);
       const token = createSessiontoken();
       req.body.password = creds.password;
@@ -34,28 +34,28 @@ module.exports = {
       res.json("User name already taken.")
     }
   },
-  
+
   ////////////////////////////////////////////////////////////////////
-  authenticate: async function(req, res) {
+  authenticate: async function (req, res) {
     console.log('request', req.params.id1)
     const password = req.params.id2;
     let account = await db.User
-      .findOne({ 'userData.userName': req.params.id1});
-    console.log("account",account)
-    if (account) { 
+      .findOne({ 'userData.userName': req.params.id1 });
+    console.log("account", account)
+    if (account) {
       const passwordHash = account.password;
       let match = await bcrypt.compare(password, passwordHash);
-      console.log("match",match)
-      if(match) {
+      console.log("match", match)
+      if (match) {
         const token = createSessiontoken()
-        console.log("token",token)
+        console.log("token", token)
         console.log("username", account.userData.userName);
         await db.User.findOneAndUpdate(
-          {'userData.userName': req.params.id1},
-          {'userData.sessionToken': token},
-          {new: true}    //You should set the new option to true to return the document after update was applied.
+          { 'userData.userName': req.params.id1 },
+          { 'userData.sessionToken': token },
+          { new: true }    //You should set the new option to true to return the document after update was applied.
         )
-        .then(result => res.json(result.userData))
+          .then(result => res.json(result.userData))
       } else {
         res.json("Wrong password.")
       }
@@ -65,34 +65,35 @@ module.exports = {
   },
 
   //////////////////////////////////////////////////////////////////
-  findAll: async function(req, res) {    
+  findAll: async function (req, res) {
     await db.User
       .find({})
       .then(result => {
-          let array2 = result.map(function (user) {
-            return user._id
-          })
-          console.log("array2",array2);
-          res.json(array2);
+        let array2 = result.map(function (user) {
+          return user._id
+        })
+        console.log("array2", array2);
+        res.json(array2);
       })
       .catch(err => res.status(422).json(err))
   },
 
   /////////////////////////////////////////////////////////////////////
-  findById: async function(req, res) {
+  findById: async function (req, res) {
+    console.log("findById");
     console.log("_id", req.params.id1);
     // await db.User    
     // .findOne({ 'userName': req.params.id1})
-    await db.User    
-      .findOne({ '_id': req.params.id1})
+    await db.User
+      .findOne({ '_id': req.params.id1 })
       //Sending only userData back
       // .then(result =>res.json(result.userData)) 
       .then(result => {
-          // https://medium.com/@captaindaylight/get-a-subset-of-an-object-9896148b9c72
-          // Sending _id and userData back ie. everything except password and salt
-          const subsetOfUser = (({ _id, userData }) => ({ _id, userData}))(result);
-          console.log("subset",subsetOfUser); 
-          res.json(subsetOfUser);
+        // https://medium.com/@captaindaylight/get-a-subset-of-an-object-9896148b9c72
+        // Sending _id and userData back ie. everything except password and salt
+        const subsetOfUser = (({ _id, userData }) => ({ _id, userData }))(result);
+        console.log("subset", subsetOfUser);
+        res.json(subsetOfUser);
       })
       .catch(err => res.status(422).json(err))
   },
@@ -101,56 +102,102 @@ module.exports = {
   // Send the value for each field of updated User from frontend to
   // updatedUser below from frontend - atleast 0 or "", else field 
   // not specified wiil be set as null
-  
-  updateById: async function(req, res) {
-    console.log("req",req.body);
-    console.log("_id", req.params.id1); 
-    const filter = { '_id': req.params.id1 };    // updating by user id
-    // const filter = { 'userData.userName': req.params.id1 };  //updating by user name
+
+  updateById: async function (req, res) {
+    console.log("req", req.body);
+    console.log("_id", req.params.id1);
+    // const filter = { '_id': req.params.id1 };    // updating by user id
+    const filter = { 'userData.userName': req.params.id1 };  //updating by user name
     const updatedUser = {
-      'password'          : req.body.password,
-      'userData.petName'  : req.body.userData.petName,
-      'userData.breed'    : req.body.userData.breed, 
-      'userData.age'      : req.body.userData.age,
-      'userData.park'     : req.body.userData.park,
-      'userData.ball'     : req.body.userData.ball,
-      'userData.frisbee'  : req.body.userData.frisbee,
-      'userData.email'    : req.body.userData.email,
-      'userData.photoUrl' : req.body.userData.photoUrl,
-      'userData.info'     : req.body.userData.info,
-      'userData.zipCode'  : req.body.userData.zipCode,
-      'userData.city'     : req.body.userData.city
-      };
+      // 'password': req.body.password,
+      'userData.petName': req.body.userData.petName,
+      'userData.breed': req.body.userData.breed,
+      'userData.age': req.body.userData.age,
+      'userData.park': req.body.userData.park,
+      'userData.ball': req.body.userData.ball,
+      'userData.frisbee': req.body.userData.frisbee,
+      'userData.email': req.body.userData.email,
+      'userData.photoUrl': req.body.userData.photoUrl,
+      'userData.info': req.body.userData.info,
+      'userData.zipCode': req.body.userData.zipCode,
+      'userData.city': req.body.userData.city
+    };
     await db.User.findOneAndUpdate(
-        filter, updatedUser,
-        {new: true}    //You should set the new option to true to return the document after update was applied.    
-      )
+      filter, updatedUser,
+      { new: true }    //You should set the new option to true to return the document after update was applied.    
+    )
       .then(result => res.json(result.userData))
       .catch(err => res.status(422).json(err));
   },
 
-//await db.User.updateOne(filter,{ $set: updatedUser }) 
-///////////////////////////////////////////////////////////////////
-  updateMatchesYesById: async function(req, res) {
-    console.log("_id", req.params.id1); 
-    console.log("req",req.body);
+  //await db.User.updateOne(filter,{ $set: updatedUser }) 
+  ///////////////////////////////////////////////////////////////////
+  updateMatchesYesById: async function (req, res) {
+    console.log("_id", req.params.id1);
+    console.log("req", req.body);
     // let account = await db.User
     //               .findOne({ 'userData.userName': req.params.id1});   // To update by user name
     let account = await db.User
-                  .findOne({ '_id': req.params.id1});    // To update by user id
+      .findOne({ '_id': req.params.id1 });    // To update by user id
     console.log("account", account);
     let oldMatchesYes = account.userData.matchesYes;
-    console.log("old",oldMatchesYes);
+    console.log("old", oldMatchesYes);
     var newMatchesYes = oldMatchesYes.concat(req.params.id2);
-    console.log("updated",newMatchesYes);
-     const filter = { '_id': req.params.id1 };    // updating by user id
+    console.log("updated", newMatchesYes);
+    const filter = { '_id': req.params.id1 };    // updating by user id
     //  const filter = { 'userData.userName': req.params.id1 };  //updating by user name    
-     await db.User.updateOne(filter,
-            { $set: { 'userData.matchesYes': newMatchesYes} }
-            )  
+    await db.User.updateOne(filter,
+      { $set: { 'userData.matchesYes': newMatchesYes } }
+    )
       .then(result => res.json("Your Match Choice has been saved"))
       .catch(err => res.status(422).json(err));
+  },
+  ///////////////////////////////////////////////////////////////
+
+  getMatchesById: async function (req, res) {
+    console.log("getMatchesById");
+    console.log("_id", req.params.id1);
+    //To Find by userName
+    // let account = await db.User 
+    //  .findOne({ 'userName': req.params.id1})
+    let account = await db.User
+      .findOne({ '_id': req.params.id1 })
+    console.log("account", account)
+    let matchedUsers = account.userData.matchesYes;
+    console.log(matchedUsers);
+    await db.User.find({
+      _id: {
+        $in: matchedUsers
+      }
+    })
+      // .then((result) => res.json(result))
+      .then(result => {
+        let keys_to_keep = ['_id', 'userData']
+        const result2 = result.map(e => {
+          const obj = {};
+          keys_to_keep.forEach(k => obj[k] = e[k])
+          return obj;
+        });
+        console.log("result2", result2);
+        res.json(result2);
+      })
+      .catch(err => res.status(422).json(err));
+
+    // for (i = 0; i < matchedUsers.length; i++) {
+    //     console.log(matchedUsers[i]);
+    //     let matchAccount = await db.User    
+    //       .findOne({ '_id': matchedUsers[i]}) 
+    //       .then(result => res.json(result))
+    //       .catch(err => res.status(422).json(err));
+    //     // matchedUsersData = matchedUsersData.concat(matchAccount);
+    // }
+    // // console.log(matchedUsersData); 
+
   }
+
+  ///////////////////////////////////////////////////////////////
+
+};
   
 //////////////////////////////////////////////////////////////////////
  
@@ -186,4 +233,4 @@ module.exports = {
   //     .catch(err => res.status(422).json(err));
   // }
 
-};
+
