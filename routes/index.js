@@ -1,24 +1,25 @@
 const router = require("express").Router();
 const usersController = require("../controllers/usersController");
+const auth = require("../controllers/middlewere/session-trecker")
 
 router
 .route("/users")
     .post(usersController.create)   // create a user
-    .get(usersController.findAll)   // get all users
+    .get(auth.authentication, usersController.findAll)   // get all users
   
 router
 .route("/users/:id1/:id2")          //id1 is username, id2 is password
     .get(usersController.authenticate)
    
 router
-.route("/users/:id1")                   //id1 is user _id
-    .get(usersController.findById)      // get 1 user by id   
-    .put(usersController.updateById)     // update 1 user by id
+.route("/users/:id1")            //id1 is user _id
+    .get(auth.authentication, usersController.findById)   // get 1 user by id   
+    .put(auth.authentication, usersController.updateById)     // update 1 user by id
 
 
 router
-.route("/usersmatches/:id1/:id2")       //id1 is userid1, id2 user id of match
-    .put(usersController.updateMatchesYesById)     // update 1 user's matchesYes by id
+.route("/usersmatches/:id1/:id2")    //id1 is userid1, id2 user id of match
+    .put(auth.authentication, usersController.updateMatchesYesById)     // update 1 user's matchesYes by id
  
 router
 .route("/usersallmatches/:id1")            //id1 is user _id
