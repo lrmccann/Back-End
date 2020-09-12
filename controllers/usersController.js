@@ -99,10 +99,6 @@ module.exports = {
   },
 
   /////////////////////////////////////////////////////////////////////
-  // Send the value for each field of updated User from frontend to
-  // updatedUser below from frontend - atleast 0 or "", else field 
-  // not specified wiil be set as null
-
   updateById: async function (req, res) {
     console.log("req", req.body);
     console.log("_id", req.params.id1);
@@ -122,10 +118,24 @@ module.exports = {
       'userData.zipCode': req.body.userData.zipCode,
       'userData.city': req.body.userData.city
     };
+
+    let updatedUser2 = {};
+    for (x in updatedUser) {
+      if (updatedUser[x] != null){   // field has been updated by frontend 
+        if(updatedUser[x] === ""){  // field has been set to "" (deleted)
+          updatedUser2[x] = null; 
+        }
+        else {
+          updatedUser2[x] = updatedUser[x];
+        }
+      }
+    }
+    console.log("up", updatedUser2)
+
     await db.User.findOneAndUpdate(
-      filter, updatedUser,
+      filter, updatedUser2,
       { new: true }    //You should set the new option to true to return the document after update was applied.    
-    )
+    )   
       .then(result => res.json(result.userData))
       .catch(err => res.status(422).json(err));
   },
@@ -171,6 +181,7 @@ module.exports = {
       }
     })
       // .then((result) => res.json(result))
+      // .sort({"userData.city":1})
       .then(result => {
         let keys_to_keep = ['_id', 'userData']
         const result2 = result.map(e => {
