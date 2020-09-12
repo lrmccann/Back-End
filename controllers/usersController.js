@@ -99,7 +99,10 @@ module.exports = {
   },
 
   /////////////////////////////////////////////////////////////////////
- 
+  // Send the value for each field of updated User from frontend to
+  // updatedUser below from frontend - atleast 0 or "", else field 
+  // not specified wiil be set as null
+
   updateById: async function (req, res) {
     console.log("req", req.body);
     console.log("_id", req.params.id1);
@@ -119,24 +122,10 @@ module.exports = {
       'userData.zipCode': req.body.userData.zipCode,
       'userData.city': req.body.userData.city
     };
-
-    let updatedUser2 = {};
-    for (x in updatedUser) {
-      if (updatedUser[x] != null){   // field has been updated by frontend 
-        if(updatedUser[x] === ""){  // field has been set to "" (deleted)
-          updatedUser2[x] = null; 
-        }
-        else {
-          updatedUser2[x] = updatedUser[x];
-        }
-      }
-    }
-    console.log("up", updatedUser2)
-
     await db.User.findOneAndUpdate(
-      filter, updatedUser2,
+      filter, updatedUser,
       { new: true }    //You should set the new option to true to return the document after update was applied.    
-    )   
+    )
       .then(result => res.json(result.userData))
       .catch(err => res.status(422).json(err));
   },
@@ -180,9 +169,8 @@ module.exports = {
       _id: {
         $in: matchedUsers
       }
-    })   
+    })
       // .then((result) => res.json(result))
-      // .sort({"userData.city":1})
       .then(result => {
         let keys_to_keep = ['_id', 'userData']
         const result2 = result.map(e => {
@@ -221,8 +209,33 @@ module.exports = {
 
 };
   
-/////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////
  
+// await db.User.findOneAndUpdate(
+//     filter, updatedUser,
+//     {new: true}    //You should set the new option to true to return the document after update was applied.    
+//   )
+// .then(result => res.json(result.userData))
+// .catch(err => res.status(422).json(err));
+// }
+
+  // update: function(req, res) {
+  //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
+  //     .then(dbModel => res.json(dbModel))
+  //     .catch(err => res.status(422).json(err));
+  // },
+
+  // db.Post.find(req.query)
+  //   .sort({ date: -1 })
+  //   .then(dbModel => res.json(dbModel))
+  //   .catch(err => res.status(422).json(err));
+// }
+
+  // update: function(req, res) {
+    //   db.Post.findOneAndUpdate({ _id: req.params.id }, req.body)
+  //     .then(dbModel => res.json(dbModel))
+  //     .catch(err => res.status(422).json(err));
+  // },
   // remove: function(req, res) {
   //   db.Post.findById({ _id: req.params.id })
   //     .then(dbModel => dbModel.remove())
