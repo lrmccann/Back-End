@@ -12,25 +12,25 @@ router
     .get(usersController.authenticate)
    
 router
-.route("/users/:id1")            //id1 is user _id
-    .get(auth.authentication, usersController.findById)   // get 1 user by id   
-    .put(auth.authentication, usersController.updateById)     // update 1 user by id
+.route("/users/:id1")            
+    .get(auth.authentication, usersController.findById)    // get 1 user by _id (:id1)   
+    .put(auth.authentication, usersController.updateById)      // update 1 user by userName (:id1)
 
-
+// update :id1 user's matchesYes array be adding :id2 (id of matched user) in it
+//:id1 is userid1, :id2 user id of match
 router
-.route("/usersmatches/:id1/:id2")    //id1 is userid1, id2 user id of match
-    .put(auth.authentication, usersController.updateMatchesYesById)     // update 1 user's matchesYes by id
+.route("/usersmatches/:id1/:id2")    
+    .put(auth.authentication, usersController.updateMatchesYesById)   
  
+    // get all info for all matches (for all users in matchesYes array) of user by id (:id1) 
 router
-.route("/usersallmatches/:id1")            //id1 is user _id
-    .get(usersController.getMatchesById)   // get 1 user by id
+.route("/usersallmatches/:id1")            
+    .get(usersController.getMatchesById)    //id1 is user _id
 
 
 // Matches with "/api/posts/:id"
 // router
 //   .route("/:id")
-//   .get(usersController.findById)
-//   .put(usersController.update)
 //   .delete(usersController.remove);
 
 module.exports = router;
