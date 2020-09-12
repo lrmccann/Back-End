@@ -193,6 +193,16 @@ module.exports = {
     // }
     // // console.log(matchedUsersData); 
 
+  },
+
+////////////////////////////////////////
+  getSessionToken: async function (req, res) {
+    console.log("getSessionToken", req)
+    if (req){
+      return await db.User.findOne({ 'userData.sessionToken': req })
+    } else {
+      return null;
+    }
   }
 
   ///////////////////////////////////////////////////////////////
