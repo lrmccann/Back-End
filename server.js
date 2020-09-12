@@ -28,7 +28,7 @@ app.use(bodyParser.json());
 app.use(routes);
 
 // Connect to the Mongo DB
-mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/caninecupidDB");
+mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/caninecupidDB", { useNewUrlParser: true, useUnifiedTopology: true });
 
 app.get("/status", function(req, res) {
   res.send("Welcome to Canine Cupid!");
