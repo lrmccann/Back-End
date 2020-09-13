@@ -12,7 +12,7 @@ router
     .get(usersController.authenticate)
    
 router
-.route("/users/:id1")            
+.route("/user/:id1")            
     .get(auth.authentication, usersController.findById)    // get 1 user by _id (:id1)   
     .put(auth.authentication, usersController.updateById)      // update 1 user by userName (:id1)
 
