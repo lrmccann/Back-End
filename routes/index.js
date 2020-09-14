@@ -20,7 +20,7 @@ router
 //:id1 is user Name, :id2 user Name of match
 router
 .route("/usersmatches/:id1/:id2")    
-    .put(auth.authentication, usersController.updateMatchesYesByName)   
+    .put(usersController.updateMatchesYesByName)   
  
     // get all info for all matches (for all users in matchesYes array) of user by id (:id1) 
 router
