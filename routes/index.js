@@ -25,7 +25,7 @@ router
     // get all info for all matches (for all users in matchesYes array) of user by id (:id1) 
 router
 .route("/usersallmatches/:id1")            
-    .get(usersController.getMatchesByName)    //id1 is user Name
+    .get(auth.authentication, usersController.getMatchesByName)    //id1 is user Name
 
 
 // Matches with "/api/posts/:id"
