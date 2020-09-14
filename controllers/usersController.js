@@ -70,7 +70,7 @@ module.exports = {
       .find({})
       .then(result => {
         let array2 = result.map(function (user) {
-          return user._id
+          return user.userData.userName
         })
         console.log("array2", array2);
         res.json(array2);
@@ -79,27 +79,28 @@ module.exports = {
   },
 
   /////////////////////////////////////////////////////////////////////
-  findById: async function (req, res) {
+  findByName: async function (req, res) {
     console.log("findById");
     console.log("_id", req.params.id1);
-    // await db.User    
-    // .findOne({ 'userName': req.params.id1})
-    await db.User
-      .findOne({ '_id': req.params.id1 })
+    await db.User    
+    .findOne({ 'userData.userName': req.params.id1})
+    // await db.User
+    //   .findOne({ '_id': req.params.id1 })
       //Sending only userData back
-      // .then(result =>res.json(result.userData)) 
-      .then(result => {
+      .then(result =>res.json(result.userData)) 
+      // .then(result => {
         // https://medium.com/@captaindaylight/get-a-subset-of-an-object-9896148b9c72
         // Sending _id and userData back ie. everything except password and salt
-        const subsetOfUser = (({ _id, userData }) => ({ _id, userData }))(result);
-        console.log("subset", subsetOfUser);
-        res.json(subsetOfUser);
-      })
+        // const subsetOfUser = (({ _id, userData }) => ({ _id, userData }))(result);
+        // console.log("subset", subsetOfUser);
+        // res.json(subsetOfUser);
+
+      // })
       .catch(err => res.status(422).json(err))
   },
 
   /////////////////////////////////////////////////////////////////////
-  updateById: async function (req, res) {
+  updateByName: async function (req, res) {
     console.log("req", req.body);
     console.log("_id", req.params.id1);
     // const filter = { '_id': req.params.id1 };    // updating by user id
@@ -142,20 +143,21 @@ module.exports = {
 
   //await db.User.updateOne(filter,{ $set: updatedUser }) 
   ///////////////////////////////////////////////////////////////////
-  updateMatchesYesById: async function (req, res) {
-    console.log("_id", req.params.id1);
-    console.log("req", req.body);
-    // let account = await db.User
-    //               .findOne({ 'userData.userName': req.params.id1});   // To update by user name
+  updateMatchesYesByName: async function (req, res) {
+    console.log("id1", req.params.id1);
+    console.log("id2", req.params.id2);
+    // console.log("req", req.body);
     let account = await db.User
-      .findOne({ '_id': req.params.id1 });    // To update by user id
+                  .findOne({ 'userData.userName': req.params.id1});   // To update by user name
+    // let account = await db.User
+    //   .findOne({ '_id': req.params.id1 });    // To update by user id
     console.log("account", account);
     let oldMatchesYes = account.userData.matchesYes;
     console.log("old", oldMatchesYes);
     var newMatchesYes = oldMatchesYes.concat(req.params.id2);
     console.log("updated", newMatchesYes);
-    const filter = { '_id': req.params.id1 };    // updating by user id
-    //  const filter = { 'userData.userName': req.params.id1 };  //updating by user name    
+    // const filter = { '_id': req.params.id1 };    // updating by user id
+     const filter = { 'userData.userName': req.params.id1 };  //updating by user name    
     await db.User.updateOne(filter,
       { $set: { 'userData.matchesYes': newMatchesYes } }
     )
@@ -164,26 +166,26 @@ module.exports = {
   },
   ///////////////////////////////////////////////////////////////
 
-  getMatchesById: async function (req, res) {
-    console.log("getMatchesById");
-    console.log("_id", req.params.id1);
+  getMatchesByName: async function (req, res) {
+    console.log("getMatchesByName");
+    console.log("query", req.params.id1);
     //To Find by userName
-    // let account = await db.User 
-    //  .findOne({ 'userName': req.params.id1})
-    let account = await db.User
-      .findOne({ '_id': req.params.id1 })
+    let account = await db.User 
+     .findOne({ 'userData.userName': req.params.id1})
+    // let account = await db.User
+    //   .findOne({ '_id': req.params.id1 })
     console.log("account", account)
     let matchedUsers = account.userData.matchesYes;
-    console.log(matchedUsers);
+    console.log("MatchYes", matchedUsers);
     await db.User.find({
-      _id: {
+        "userData.userName": {
         $in: matchedUsers
-      }
+        }
     })
-      // .then((result) => res.json(result))
+      // .then(result => res.json(result))
       // .sort({"userData.city":1})
       .then(result => {
-        let keys_to_keep = ['_id', 'userData']
+        let keys_to_keep = ['userData']
         const result2 = result.map(e => {
           const obj = {};
           keys_to_keep.forEach(k => obj[k] = e[k])
