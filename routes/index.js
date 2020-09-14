@@ -13,19 +13,19 @@ router
    
 router
 .route("/user/:id1")            
-    .get(auth.authentication, usersController.findById)    // get 1 user by _id (:id1)   
-    .put(auth.authentication, usersController.updateById)      // update 1 user by userName (:id1)
+    .get(auth.authentication, usersController.findByName)    // get 1 user by name (:id1)   
+    .put(auth.authentication, usersController.updateByName)      // update 1 user by userName (:id1)
 
-// update :id1 user's matchesYes array be adding :id2 (id of matched user) in it
-//:id1 is userid1, :id2 user id of match
+// update :id1 user's matchesYes array be adding :id2 (Name of matched user) in it
+//:id1 is user Name, :id2 user Name of match
 router
 .route("/usersmatches/:id1/:id2")    
-    .put(auth.authentication, usersController.updateMatchesYesById)   
+    .put(auth.authentication, usersController.updateMatchesYesByName)   
  
     // get all info for all matches (for all users in matchesYes array) of user by id (:id1) 
 router
 .route("/usersallmatches/:id1")            
-    .get(usersController.getMatchesById)    //id1 is user _id
+    .get(usersController.getMatchesByName)    //id1 is user Name
 
 
 // Matches with "/api/posts/:id"
